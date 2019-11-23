@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es" xml:lang="es">
+<head>
+  <meta charset="utf-8">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="description" content="Metrónomo circular polirrítmico">
+  <meta name="author" content="Santiago Chávez">
+  <title>Metrónomo circular polirrítmico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Allow web app to be run in full-screen mode. -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Metrónomo circular polirrítmico">
+  <meta name="apple-mobile-web-app-title" content="Metrónomo circular polirrítmico">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <!-- Disable automatic phone number detection. -->
+  <meta name="format-detection" content="telephone=no">
+  <!-- FAVICON -->
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <!-- STYLES -->
+  <link rel="stylesheet" type="text/css" href="w3.css">
+</head>
+<body>
+  <!-- CONTENTS -->
+  <button id="playButton" class="w3-xlarge w3-button w3-green w3-round">Play</button>
+  <hr>
+  <textarea id="consola" style="box-sizing:border-box;width:100%;height: 300px;"></textarea>
+
+  <!-- SCRIPTS -->
+  <script>
+    // Toggle css class
+    const toggleClass = (id,cla) => {
+      var element = document.getElementById(id);
+      if (element.classList) { 
+        element.classList.toggle(cla);
+      } else {
+        var classes = element.className.split(" ");
+        var i = classes.indexOf(cla);
+        if (i >= 0) 
+          classes.splice(i, 1);
+        else 
+          classes.push(cla);
+          element.className = classes.join(" "); 
+      }
+    };
+    // Consola debug
+    const consola = (t,clean=false) => {
+      if(clean)document.getElementById('consola').value="";
+      document.getElementById('consola').value=t+"\n"+document.getElementById('consola').value;
+    };
+    document.getElementById('consola').value='';
+    ///////////////////////////////////////////////////////////////
+    const producto_mcm = (a,b) => {
+      var r = a * b;
+      var m = Math.max(a,b);
+      var n = Math.min(a,b);
+      m = m/n;
+      if (Number.isInteger(m)) r = r/n;
+      return r;
+    };
+    const array_mcm = (n=[]) => {
+      n.sort(function(a, b){return b-a});
+      var m = 1;
+      for (var i = 0; i < n.length; i++) {
+        m = producto_mcm(m,n[i]);
+      }
+      return m;
+    };
+    const calcular_mcm = () => {
+
+    };
+    const multiplicar = (pp=[]) => {
+      // console.log("pp:",pp);
+      // Cuenta la longitud de cada patrón en n[]
+      var n = [];
+      for (var i = 0; i < pp.length; i++) {
+        n.push(pp[i]['patron'].length);
+      }
+      // console.log("n:",n);
+      // Calcula mcm de las longitudes de los patrones
+      var m = array_mcm(JSON.parse(JSON.stringify(n))); // El paso por JSON evita pasar el array por referencia (https://stackoverflow.com/a/40470792)
+      // console.log("m:",m);
+      // Calcula la distancia en micropulsos de cada pulso del patron actual
+      var d = [];
+      for (var i = 0; i < pp.length; i++) {
+        d.push(m/n[i]);
+      }
+      // console.log("d:",d);
+      // Crea un patrón unificado a partir de los patrones recibidos
+      // La longitud de patrón será: m
+      var p = []; // Patrón de salida
+      var v = []; // Volumen de salida
+      for (var i = 0; i < m; i++) {
+        p.push(0);
+        v.push(0);
+      }
+      // Los patrones posteriores sobrescriben a los anteriores si caen en el mismo pulso
+      // Pero un silencio (0) NO sobrescribe golpe (>0)
+      for (var i = 0; i < pp.length; i++) {
+        // console.log("n[i]:",n[i]," | d[i]:",d[i]);
+        for (var j = 0,k = 0; j < m; j+=d[i],k++) {
+          // pp[i][k] => Golpe o Silencio del patron actual
+          // p[j] => Golpe o Silencio del patron de salida
+          // console.log("Actual:",pp[i][k]," | Salida:",p[j]);
+          if(p[j]<=0 || pp[i][k]>0) {
+            p[j]=pp[i]['patron'][k];
+            v[j]=pp[i]['vol'][k];
+          }
+        }
+      }
+      return {
+        'nmax':m,
+        'patron':p,
+        'vol':v,
+      };
+    };
+
+    // TEST ----------------------------------------------
+    /*const entries = Object.entries(multiplicar([
+      {'patron':[1,1,1,1,1],'vol':[1.0,0.8,0.6,0.4,0.2]},
+      {'patron':[3,0,0],'vol':[1.0,0,0]},
+      {'patron':[2,0,2,0,2],'vol':[0.5,0,0.5,0,0.2]},
+      {'patron':[4,0,0,0,4,0,0,0,4],'vol':[0.7,0,0,0,0.7,0,0,0,0.7]}
+    ]));
+    for (var i = entries.length-1; i >= 0; i--) {
+      const c = i==entries.length-1 ? true:false;
+      // const c = false;
+      consola(entries[i][0]+": "+entries[i][1],c);
+    }*/
+    // TEST ----------------------------------------------
+    ///////////////////////////////////////////////////////////////
+    const context = new AudioContext();
+    var isPlaying = false;
+    var cps = 0.25;
+    var tipbip = 3;
+    var maxBeepDuration = 0.1; // Duracion del beep
+    var operado = multiplicar([
+      {'patron':[30,30,30,30,30],'vol':[1.0,0.8,0.6,0.4,0.2]},
+      {'patron':[33,0,0],'vol':[1.0,0,0]},
+      {'patron':[37,0,37,0,37],'vol':[0.5,0,0.5,0,0.2]},
+      {'patron':[40,0,0,0,40,0,0,0,40],'vol':[0.7,0,0,0,0.7,0,0,0,0.7]}
+    ]);
+
+    const frequency = (n=0,tune=440) => {
+      if(n==0)return 0;
+      else return (tune/8) * Math.pow(2, n/12);
+    };
+    const metronome = (cps = 0.5, bpc = 4, callback, type=3, currentBeat = 0) => {
+      const now = context.currentTime; // Tiempo actual
+      const bps = cps * bpc; // Beats por segundo
+      const bl =  1/bps; // beat length (en segundos)
+      const zero = 0.00001;
+
+      const pulso = currentBeat % bpc;
+      const freq = frequency(operado['patron'][pulso]);
+
+
+      let gainNode = context.createGain();
+      let osc = context.createOscillator();
+      gainNode.connect(context.destination);
+      osc.connect(gainNode);
+      gainNode.gain.value = operado['vol'][pulso]==0 ? zero:Math.pow(operado['vol'][pulso],2);
+
+      var bla =  bl-0;
+      var np = 0;
+      while(true){
+        np++;
+        const nextpulso = (currentBeat+np) % bpc;
+        if(operado['patron'][nextpulso]==0)bla+=bl;
+        else break;
+      }
+      currentBeat+=np-1;
+
+      var ble = maxBeepDuration-0;
+      if(ble>bla/2)ble=bla/2;
+      gainNode.gain.exponentialRampToValueAtTime(zero, now + ble);
+
+      // Tipo de onda en el ocilador
+      // Only 0-3 are valid types.
+      if(type<=0 || type>3) type=0;
+      var types = [
+        'sine', // A sine wave. This is the default value.
+        'square', // A square wave with a duty cycle of 0.5; that is, the signal is "high" for half of each period.
+        'sawtooth', // A sawtooth wave.
+        'triangle', // A triangle wave.
+      ];
+      osc.type = types[type];
+
+      osc.frequency.value = freq;
+      osc.start(now);
+      osc.stop(now + bla);
+
+      callback({now:now,cps:cps,bpc:bpc,bps:bps,bla:bla,pulso:pulso,freq:freq,patron:operado['patron'][pulso],vol:operado['vol'][pulso]});
+
+      osc.onended = () => {
+        if(isPlaying)metronome(cps, bpc, callback, type, (currentBeat += 1));
+        osc = null;
+        gainNode = null;
+      }
+    }
+    ///////////////////////////////////////////////////////////////
+    document.getElementById('playButton').onclick = function() {
+      if(isPlaying){
+        this.innerHTML="PLAY";
+        toggleClass('playButton',"w3-green");
+        toggleClass('playButton',"w3-red");
+        isPlaying=false;
+      }else{
+        this.innerHTML="STOP";
+        toggleClass('playButton',"w3-green");
+        toggleClass('playButton',"w3-red");
+        isPlaying=true;
+        metronome(cps,operado['nmax'],function(obj){
+          const entries = Object.entries(obj);
+          for (var i = entries.length-1; i >= 0; i--) {
+            const c = i==entries.length-1 ? true:false;
+            // const c = false;
+            consola(entries[i][0]+": "+entries[i][1],c);
+          }
+        },tipbip);
+      }
+    };
+
+  </script>
+</body>
+</html>
