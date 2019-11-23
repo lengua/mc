@@ -1,2 +1,14 @@
-# mc
-Metrónomo Polirrítmico Circular
+# Circular Polyrhythmic Metronome
+
+## Online Demo
+https://lengua.la/mc/
+
+## What is this
+This is a progressive web app, a circular polyrythmic metronome that accepts Rythmic "Claves" as defined by La Lengua Group in https://lengua.la/ri
+
+In can be used in any modern browser and it can be installed as an offline app on any android or windows device.
+
+![Metrónomo Polirrítmico Circular](metronomo.png)
+
+### Coded by
+Santiago C. Novaro ([@sanxofon](https://twitter.com/sanxofon))
