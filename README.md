@@ -6,6 +6,10 @@ In can be used in any modern browser and it can be installed as an offline app o
 ## Online Demo
 https://lengua.la/mc/
 
+&
+
+https://lengua.github.io/mc/
+
 ![Metrónomo Polirrítmico Circular](metronomo.png)
 
 ### Coded by
