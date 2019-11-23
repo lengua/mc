@@ -5,16 +5,17 @@
   El método event.waitUntil() toma una promesa y la usa para saber 
     cuánto tarda la instalación y si se realizó correctamente.
 */
-var CACHE_NAME = 'metronomo-cache-v1-2';
+var CACHE_NAME = 'metronomo-cache-v1-8';
 var urlsToCache = [
   '/mc/',
   '/mc/w3.css',
+  '/mc/mc.css',
   '/mc/favicon.png',
-  '/mc/cog.png',
-  '/mc/launcher-icon-512.png',
-  '/mc/launcher-icon-1x.png',
-  '/mc/launcher-icon-2x.png',
-  '/mc/launcher-icon-4x.png'
+  '/mc/img/cog.png',
+  '/mc/img/launcher-icon-512.png',
+  '/mc/img/launcher-icon-1x.png',
+  '/mc/img/launcher-icon-2x.png',
+  '/mc/img/launcher-icon-4x.png'
 ];
 
 /*
@@ -135,7 +136,7 @@ self.addEventListener('fetch', function(event) {
 */
 self.addEventListener('activate', function(event) {
 
-  var cacheWhitelist = ['metronomo-cache-v1']; //, 'blog-posts-cache-v1'];
+  var cacheWhitelist = ['metronomo-cache-v1-8']; //, 'blog-posts-cache-v1'];
 
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
