@@ -1,10 +1,4 @@
-<?php
-$version = "v1.2";
-if(@$_GET['launcher']) $version = $version."b";
-if(!empty($_GET['ti'])) $ti = abs($_GET['ti']);
-else $ti = 25;
-
-?><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" xml:lang="en">
 <head>
 <meta charset="utf-8">
@@ -14,7 +8,7 @@ else $ti = 25;
 <meta name="description" content="Metrónomo irregular polirrítmico">
 <meta name="image" content="/mc/metronomo_705x368.png">
 <meta name="author" content="Santiago Chávez">
-<link rel="manifest" href="/mc/manifest.php?ti=<?php echo $ti; ?>">
+<link rel="manifest" href="/mc/manifest.php?ti=25">
 <title>Metrónomo irregular polirrítmico</title>
 <meta name="theme-color" content="#202020" />
 <!-- Allow web app to be run in full-screen mode. -->
@@ -520,8 +514,8 @@ else $ti = 25;
     </div>
   </div>
   <div align="center" class="w3-text-grey w3-small" style="background: #101010;">
-    <div><b>Metrónomo irregular polirrítmico</b> <?php echo $version; ?></div>
-    <div><a href="https://lengua.la" target="_blank">@sanxofon</a> (2018-<?php echo date("Y"); ?>)</div>
+    <div><b>Metrónomo irregular polirrítmico</b> v1.2</div>
+    <div><a href="https://lengua.la" target="_blank">@sanxofon</a> (2018-2019)</div>
   </div>
 </div>
 
@@ -536,16 +530,13 @@ else $ti = 25;
 
     <div class="w3-container">
       <p class="w3-padding">Define las <b>notas</b> y el <b>volumen</b> del golpe, el acento y el silencio.</p>
-<?php
-$notas=array("A","A#","B","C","C#","D","D#","E","F","F#","G","G#","AUTO");
-?>
       <div class="w3-padding" style="border: 1px solid #606060;">
         <table align="center" class="w3-large" style="width:100%;max-width: 400px; margin:0 auto;">
           <tr>
-            <td align="right">Golpe:</td><td><select id="notu1"><?php foreach($notas as $i=>$n){ ?><option value="<?php echo $i; ?>"<?php if($i==0)echo ' selected'; ?>><?php echo $n; ?></option><?php } ?></select></td><td><input class="small" type="range" id="volu1" min="0" max="1" step="0.05" value="0.5"></td>
+            <td align="right">Golpe:</td><td><select id="notu1"><option value="0" selected>A</option><option value="1">A#</option><option value="2">B</option><option value="3">C</option><option value="4">C#</option><option value="5">D</option><option value="6">D#</option><option value="7">E</option><option value="8">F</option><option value="9">F#</option><option value="10">G</option><option value="11">G#</option><option value="12">AUTO</option></select></td><td><input class="small" type="range" id="volu1" min="0" max="1" step="0.05" value="0.5"></td>
           </tr>
           <tr>
-            <td align="right">Acento:</td><td><select id="notu2"><?php foreach($notas as $i=>$n){ ?><option value="<?php echo $i; ?>"<?php if($i==7)echo ' selected'; ?>><?php echo $n; ?></option><?php } ?></select></td><td><input class="small" type="range" id="volu2" min="0" max="1" step="0.05" value="1.0"></td>
+            <td align="right">Acento:</td><td><select id="notu2"><option value="0">A</option><option value="1">A#</option><option value="2">B</option><option value="3">C</option><option value="4">C#</option><option value="5">D</option><option value="6">D#</option><option value="7" selected>E</option><option value="8">F</option><option value="9">F#</option><option value="10">G</option><option value="11">G#</option><option value="12">AUTO</option></select></td><td><input class="small" type="range" id="volu2" min="0" max="1" step="0.05" value="1.0"></td>
           </tr>
         </table>
       </div>
@@ -744,7 +735,7 @@ var duracompas = 60/cpm; // Duración del compás en segundos
 // var ti = Math.round( (duracompas*1000*1000) / segs ) / 1000; // En microsegundos (millonésimas)
 // DEFINE TI   --------------
 
-var ti = <?php echo $ti; ?>; // Milisegundos por tick
+var ti = 25; // Milisegundos por tick
 var segs = Math.round( (duracompas*1000) / ti ); // Pasos en el círculo
 // --------------------------
 var compas = 0;
